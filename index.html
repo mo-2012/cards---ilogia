@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>iLogia Cards — كروت تعليمية بالتكرار المتباعد</title>
+<meta name="description" content="iLogia Cards — منصة كروت تعليمية (Flashcards) ضمن منظومة iLogia، تساعدك على الحفظ والفهم والمراجعة بأسلوب التكرار المتباعد.">
+<meta name="theme-color" content="#136F58">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Serif:wght@600;700&family=Noto+Naskh+Arabic:wght@600;700&display=swap">
+<link rel="stylesheet" href="ilogia-ds.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1&icon_names=add,arrow_back,arrow_forward,bar_chart,bolt,calendar_month,check,chevron_left,chevron_right,close,content_copy,dashboard,delete,download,edit,emoji_events,favorite,file_upload,flip,grade,help,home,info,keyboard_return,menu,more_vert,palette,play_arrow,psychology,restart_alt,school,search,settings,star,style,timer,upload,visibility,warning&display=swap">
+<link rel="stylesheet" href="cards.css">
+</head>
+<body class="cards-app">
+<a class="sr" href="#main">تخطَّ إلى المحتوى</a>
+
+<div class="layout">
+  <!-- ===== Sidebar ===== -->
+  <aside class="side" id="side" aria-label="التنقل الرئيسي">
+    <a class="brand side-brand" href="#/dashboard">
+      <span class="lm"><span class="ms f" aria-hidden="true">style</span></span>
+      <span><b>iLogia Cards</b><small>كروت iLogia التعليمية</small></span>
+    </a>
+    <nav class="side-nav" id="sideNav">
+      <a href="#/dashboard" data-route="dashboard"><span class="ms" aria-hidden="true">dashboard</span>لوحة التحكم</a>
+      <a href="#/decks" data-route="decks"><span class="ms" aria-hidden="true">style</span>مجموعاتي</a>
+      <a href="#/calendar" data-route="calendar"><span class="ms" aria-hidden="true">calendar_month</span>تقويم المراجعات</a>
+      <a href="#/stats" data-route="stats"><span class="ms" aria-hidden="true">bar_chart</span>الإحصائيات</a>
+      <a href="#/settings" data-route="settings"><span class="ms" aria-hidden="true">settings</span>الإعدادات</a>
+    </nav>
+    <div class="side-foot">
+      <div class="due-box" id="sideDue" hidden>
+        <span class="ms" aria-hidden="true">bolt</span>
+        <span><b id="sideDueN">0</b> كارت مستحق اليوم</span>
+        <a class="btn gold s" href="#/study">راجع الآن</a>
+      </div>
+      <a class="eco" href="https://ilogia-eg.com" target="_blank" rel="noopener">جزء من منظومة <b>ilogia</b> التعليمية</a>
+    </div>
+  </aside>
+  <div class="side-scrim" id="sideScrim" hidden></div>
+
+  <!-- ===== Main column ===== -->
+  <div class="col">
+    <header class="top app-top"><div class="in">
+      <button class="btn g s menu-btn" id="menuBtn" aria-label="القائمة" aria-expanded="false"><span class="ms" aria-hidden="true">menu</span></button>
+      <h1 class="page-title" id="pageTitle">لوحة التحكم</h1>
+      <div class="top-acts">
+        <button class="btn g s" id="themeBtn" aria-label="تبديل المظهر"><span class="ms" aria-hidden="true">palette</span></button>
+        <a class="btn s" href="#/decks?new=1" id="newDeckBtn"><span class="ms" aria-hidden="true">add</span><span class="tx">مجموعة جديدة</span></a>
+      </div>
+    </div></header>
+
+    <main id="main" class="main" tabindex="-1">
+      <!-- يُملأ بالتوجيه (hash routing) -->
+    </main>
+
+    <footer class="app-foot">
+      <span>iLogia Cards · بياناتك محفوظة محليًا على جهازك</span>
+      <span>خوارزمية المراجعة: SM-2 <button class="lnk" id="algoInfo" type="button">كيف تعمل؟</button></span>
+    </footer>
+  </div>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <button class="btn g s x" id="dlgX" aria-label="إغلاق"><span class="ms" aria-hidden="true">close</span></button>
+  <div id="dlgBody"></div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="filePick" hidden>
+
+<script src="cards.js"></script>
+</body>
+</html>
