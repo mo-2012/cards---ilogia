@@ -8,7 +8,7 @@
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
 const DAY = 864e5;
 
 const fmtDate = ts => new Intl.DateTimeFormat('ar-EG', { dateStyle: 'medium' }).format(new Date(ts));
@@ -69,9 +69,11 @@ const Store = {
     this.save();
   },
 
-  save() {
+  onSave: null,   // بيتركّب من cards-sync.js لما المستخدم يكون مسجّل دخول
+  save(silent) {
     try { localStorage.setItem(LS_KEY, JSON.stringify(this.data)); }
     catch (e) { toast('تعذر الحفظ محليًا — تحقق من مساحة التخزين'); console.error(e); }
+    if (!silent && this.onSave) this.onSave();
   },
 
   /* --- decks --- */
@@ -131,6 +133,7 @@ const Store = {
   settings() { return this.data.settings; },
   saveSettings(p) { Object.assign(this.data.settings, p); this.save(); },
 };
+window.CardsStore = Store;   // للمزامنة (cards-sync.js)
 
 /* ============================================================
    محرك التكرار المتباعد — خوارزمية SM-2 (SuperMemo 2)
@@ -211,7 +214,7 @@ const SRS = {
 };
 
 /* حفظ تلقائي عند الإغلاق/انقطاع مفاجئ (البيانات كلها محلية أصلًا) */
-window.addEventListener('beforeunload', () => Store.save());
+window.addEventListener('beforeunload', () => Store.save(true));
 
 /* ============================================================
    الموجّه (Hash Router) + الهيكل العام
@@ -954,12 +957,17 @@ function renderSettings(main) {
         <button class="btn g" id="restoreBtn"><span class="ms" aria-hidden="true">upload</span>استعادة</button>
       </div>
       <div class="set-row">
-        <div class="lbl"><b style="color:var(--err)">مسح كل البيانات</b><small>حذف نهائي لكل المجموعات والكروت والسجلات من هذا الجهاز</small></div>
+        <div class="lbl"><b style="color:var(--err)">مسح كل البيانات</b><small>حذف نهائي لكل المجموعات والكروت والسجلات من هذا الجهاز، ومن حسابك أيضًا لو المزامنة شغالة</small></div>
         <button class="btn d" id="wipeBtn"><span class="ms" aria-hidden="true">delete</span>مسح الكل</button>
       </div>
-      <p class="hint" style="margin-block-start:var(--sp-4)">ملاحظة: النسخة الحالية تحفظ بياناتك محليًا في متصفحك (localStorage) وتعمل دون إنترنت. ربط قاعدة بيانات Supabase جاهز للتفعيل عبر <code>supabase-schema.sql</code> بعد مراجعة مسؤول المنظومة.</p>
+      <div class="set-row">
+        <div class="lbl"><b>المزامنة مع حسابك</b><small id="syncMsg">${esc(window.CardsSync ? window.CardsSync.message() : 'جاري التحقق من حسابك…')}</small></div>
+        <a class="btn g" id="syncLogin" href="https://ilogia-eg.com/login.html" target="_blank" rel="noopener" hidden>تسجيل الدخول</a>
+      </div>
+      <p class="hint" style="margin-block-start:var(--sp-4)">كروتك تُحفظ على جهازك دائمًا وتعمل دون إنترنت. عند تسجيل الدخول بحساب ilogia تتزامن تلقائيًا مع حسابك بين أجهزتك.</p>
     </div>`;
 
+  window.CardsSync?.repaint?.();
   $('#setNew').addEventListener('change', e => { Store.saveSettings({ dailyNew: Math.max(1, +e.target.value || 20) }); toast('تم الحفظ'); });
   $('#setRev').addEventListener('change', e => { Store.saveSettings({ dailyReview: Math.max(10, +e.target.value || 100) }); toast('تم الحفظ'); });
   $('#setTheme').addEventListener('change', e => { Store.saveSettings({ theme: e.target.value }); applyTheme(); toast('تم الحفظ'); });
